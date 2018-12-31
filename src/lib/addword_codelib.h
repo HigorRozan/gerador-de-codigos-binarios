@@ -80,7 +80,7 @@ void makeCodeDistMinLimited(Code* c, int distMin, int min){
 		addRandomWord(c,1);
 
 		if(c->distMin < distMin){
-			rmvLastWord(c);
+            removeLastWord(c);
 			c->numWord--;
 			boolean = 0;
 		}

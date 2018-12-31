@@ -1,7 +1,7 @@
 # include <stdio.h>
 # include <stdlib.h>
-# include "Bibliotecas/read_save_codelib.h"
-# include "Bibliotecas/addword_codelib.h"
+# include "lib/read_save_codelib.h"
+# include "lib/addword_codelib.h"
 
 int main(){
 
