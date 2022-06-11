@@ -1,27 +1,15 @@
-# include <stdio.h>
 # include <stdlib.h>
 # include "lib/read_save_codelib.h"
 # include "lib/addword_codelib.h"
 
-int main(){
+int main() {
 
-	Code* codigo;
-	char name[20] = {"Codigo/a.txt"};
-	int num = 3000,dist,ordem = 100;
+    Code *code;
+    int num = 3000;
+    int order = 100;
 
-	printf("Ordem:\n");
-	scanf("%d", &ordem);
-
-	printf("Numero de palavras:\n");
-	scanf("%d", &num);
-
-
-	codigo = startCode(ordem);
-	addRandomWord(codigo,num);
-	showCode(codigo);
-	// saveCode(codigo);
-
-
-
-return EXIT_SUCCESS;
+    code = new_code(order);
+    add_code_random_word(code, num);
+    saveCode(code);
+    return EXIT_SUCCESS;
 }

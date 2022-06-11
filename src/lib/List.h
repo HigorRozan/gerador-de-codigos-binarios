@@ -14,8 +14,8 @@ typedef struct CodeList {
 typedef struct Code {
     CodeList *code;
     int order;
-    double numWord;
-    int distMin;
+    double length;
+    int minimum_hamming_distance;
 } Code;
 
 
@@ -65,10 +65,10 @@ void removeLastWord(Code *c) {
 }
 
 
-void printList(List *l) {
+void list_print(List *l) {
     if (l != NULL) {
         printf("[%u]", l->num);
-        printList(l->next);
+        list_print(l->next);
     }
 }
 
@@ -106,22 +106,4 @@ List *freeList(List *l) {
 
 }
 
-CodeList *freeCodeList(CodeList *l) {
-    if (l != NULL) {
-        CodeList *aux;
 
-        while (l->next != NULL) {
-            aux = l->next;
-            free(l);
-            l = aux;
-
-        }
-
-        return NULL;
-
-    }
-
-}
-
-
-	

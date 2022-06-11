@@ -1,0 +1,1 @@
+/usr/sbin/cc -g -rdynamic CMakeFiles/BinaryCodeGenerator.dir/src/main.c.o -o BinaryCodeGenerator 

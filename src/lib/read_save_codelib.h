@@ -65,7 +65,7 @@ Code* readCode(char name[]){
     }   
     
     c->order = i;
-    c->numWord = countNode(code_list);
+    c->length = countNode(code_list);
     c->code = code_list;
     calcDistMin(c);
 
@@ -96,8 +96,8 @@ void showCode(Code* code){
     printf("\nCodigo:\n-----------------------\n");
 
     printf("Ordem:              [%d]\n",code->order);
-    printf("Numero de palavras: [%0.0lf]\n",code->numWord);
-    printf("Distancia Minima:   [%d]\n", code->distMin);
+    printf("Numero de palavras: [%0.0lf]\n",code->length);
+    printf("Distancia Minima:   [%d]\n", code->minimum_hamming_distance);
 
     printf("-----------------------\n\n");
 
@@ -147,8 +147,8 @@ void saveCode(Code* c){
 
     fprintf(file,"Codigo:\n-----------------------\n");
     fprintf(file,"Ordem:              [%d]\n",c->order);
-    fprintf(file,"Numero de palavras: [%0.0lf]\n",c->numWord);
-    fprintf(file,"Distancia Minima:   [%d]\n", c->distMin);
+    fprintf(file,"Numero de palavras: [%0.0lf]\n",c->length);
+    fprintf(file,"Distancia Minima:   [%d]\n", c->minimum_hamming_distance);
     fprintf(file,"-----------------------\n\n");
 
     fclose(file);

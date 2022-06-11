@@ -6,7 +6,7 @@
 /*
 void calcDistMin(Code* code){
 	
-	int dist = 0 ,distMin = code->order;
+	int dist = 0 ,minimum_hamming_distance = code->order;
 	int i;
 	CodeList* w1 = code->code;
 	CodeList* w2 = code->code;
@@ -17,8 +17,8 @@ void calcDistMin(Code* code){
 			for (i = 0; i < code->order; i++)
 				dist += (w1->word[i] + w2->word[i])%2;
 
-			if(dist < distMin && dist != 0)
-				distMin = dist;
+			if(dist < minimum_hamming_distance && dist != 0)
+				minimum_hamming_distance = dist;
 
 			dist = 0;
 			w2 = w2->next;
@@ -28,7 +28,7 @@ void calcDistMin(Code* code){
 	}
 
 	
-	code->distMin = distMin;
+	code->minimum_hamming_distance = minimum_hamming_distance;
 
 
 }
@@ -58,7 +58,7 @@ void calcDistMin(Code* code){
 	}
 
 	
-	code->distMin = distMin;
+	code->minimum_hamming_distance = distMin;
 
 
 }

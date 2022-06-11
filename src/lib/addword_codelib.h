@@ -3,7 +3,7 @@
 # include <time.h>
 
 
-void addRandomWord(Code* c, int numWord){
+void add_code_random_word(Code* c, int numWord){
 	
 	int o =  c->order;
 	CodeList *code = c->code;
@@ -46,7 +46,7 @@ void addRandomWord(Code* c, int numWord){
 		}	
 
 		c->code = addListCode(c->code,newWord); // adiciona palavra ao codigo;
-		c->numWord++;
+		c->length++;
 
 
 
@@ -56,14 +56,14 @@ void addRandomWord(Code* c, int numWord){
 
 }
 
-Code* startCode(int order){
+Code* new_code(int order){
 	
 	Code* c = (Code*)malloc(sizeof(Code));
 	
 	c->code = NULL;
 	c->order = order;
-	c->numWord = 0;
-	c->distMin = -1;
+	c->length = 0;
+	c->minimum_hamming_distance = -1;
 
 	return c;
 }
@@ -76,12 +76,12 @@ void makeCodeDistMinLimited(Code* c, int distMin, int min){
 		boolean = 1;
 
 		while(boolean){
- 		
-		addRandomWord(c,1);
 
-		if(c->distMin < distMin){
+            add_code_random_word(c, 1);
+
+		if(c->minimum_hamming_distance < distMin){
             removeLastWord(c);
-			c->numWord--;
+			c->length--;
 			boolean = 0;
 		}
 	
