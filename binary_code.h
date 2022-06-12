@@ -43,7 +43,7 @@ void calculate_minimum_hamming_distance(HammingCode *code) {
     while (word_i != NULL) {
         while (word_j != NULL) {
             int current_distance = 0;
-            
+
             for (int i = 0; i < code->order; i++){
                 current_distance += (word_i->value[i] + word_j->value[i]) % 2;
             }
