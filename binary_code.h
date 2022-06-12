@@ -3,172 +3,137 @@
 # include <string.h>
 # include <stdio.h>
 
-typedef struct CodeList {
-    short int *word;
-    struct CodeList *next;
-} CodeList;
+struct Word {
+    short int *value;
+    struct Word *next;
+};
 
-typedef struct Code {
-    CodeList *code;
+struct HammingCode {
+    struct Word *code;
     int order;
     double length;
     int minimum_hamming_distance;
-} Code;
+};
+
+typedef struct Word Word;
+typedef struct HammingCode HammingCode;
 
 
-CodeList *addListCode(CodeList *list, short int word[]) {
-    if (list == NULL) {
-        CodeList *new_node = (CodeList *) malloc(sizeof(CodeList));
-        new_node->word = word;
-        new_node->next = NULL;
-
-        return new_node;
+Word *append_new_word(Word *word, short int *value) {
+    if (word == NULL) {
+        Word *node = (Word *) malloc(sizeof(Word));
+        node->value = value;
+        node->next = NULL;
+        return node;
     }
 
-    list->next = addListCode(list->next, word);
-    return list;
+    word->next = append_new_word(word->next, value);
+    return word;
 }
 
 
-void code_save(Code* c) {
-    int i;
-
-    char name[20];
-    char num[4];
-    int ramdom;
-
-    srand((unsigned) time(NULL)); //alimenta a semente
-
-    ramdom = rand() % 1000;
-
-    sprintf(name, "Code %d", ramdom);
-
-    FILE *file;
-
-    file = fopen(("%s", name), "w");
-
-    fprintf(file, "SOF\n");
-
-    CodeList *code = c->code;
-
-    while (code != NULL) {
-
-        for (i = 0; i < c->order; i++) {
-            fprintf(file, "%u", code->word[i]);
-        }
-        fprintf(file, "\n");
-
-        code = code->next;
-
-    }
-    fprintf(file, "EOF");
-
-    fclose(file);
-
-    strcat(name, "_Doc");
-
-    file = fopen(("%s", name), "w");
-
-    fprintf(file, "Codigo:\n-----------------------\n");
-    fprintf(file, "Ordem:              [%d]\n", c->order);
-    fprintf(file, "Numero de palavras: [%0.0lf]\n", c->length);
-    fprintf(file, "Distancia Minima:   [%d]\n", c->minimum_hamming_distance);
-    fprintf(file, "-----------------------\n\n");
-
-    fclose(file);
-
-}
-
-void calcDistMin(Code *code) {
-
+// todo: optimize comparator
+void calculate_minimum_hamming_distance(HammingCode *code) {
     int dist = 0, distMin = code->order;
-    int i;
-    CodeList *w1 = code->code;
-    CodeList *w2 = code->code->next;
+    int minimum_distance = code->minimum_hamming_distance;
 
-    while (w1 != NULL) {
-        while (w2 != NULL) {
+    Word *word_i = code->code;
+    Word *word_j = code->code->next;
 
-            for (i = 0; i < code->order; i++)
-                dist += (w1->word[i] + w2->word[i]) % 2;
-
-            distMin = (dist < distMin && dist != 0) ? dist : distMin;
+    while (word_i != NULL) {
+        while (word_j != NULL) {
+            int current_distance = 0;
+            
+            for (int i = 0; i < code->order; i++){
+                current_distance += (word_i->value[i] + word_j->value[i]) % 2;
+            }
 
             dist = 0;
-            w2 = w2->next;
+            word_j = word_j->next;
         }
-        w2 = w1->next;
-        w1 = w1->next;
+        word_j = word_i->next;
+        word_i = word_i->next;
     }
 
-
     code->minimum_hamming_distance = distMin;
-
-
 }
 
 
-Code generate_code(int order, int length) {
+HammingCode generate_code(int order, int length) {
 
-    Code *c = (Code *) malloc(sizeof(Code));
-
+    HammingCode *c = (HammingCode *) malloc(sizeof(HammingCode));
     c->code = NULL;
     c->order = order;
     c->length = 0;
     c->minimum_hamming_distance = -1;
 
-    int o = c->order;
-    CodeList *code = c->code;
-    short int *newWord = NULL;
-    int i, t, aux, dist = 0;
 
-    srand((unsigned) time(NULL)); //alimenta a semente
+    Word *code = c->code;
+    int code_order = c->order;
 
 
-
-    for (t = 0; t < length; t++) {
-
-        newWord = (short int *) calloc(o, sizeof(short int));
-
-        aux = 1;
-
-        while (aux) {
-
-            aux = 0;
-
-            for (i = 0; i < o; i++)        //cria palavra randomica
-                newWord[i] = (rand() % 2);
+    for (int i = 0; i < length; i++) {
+        short int *new_word = NULL;
+        new_word = (short int *) calloc(code_order, sizeof(short int));
 
 
-            while (code != NULL) {
+        // Generate new random value
+        for (int j = 0; j < code_order; j++)
+            new_word[j] = (rand() % 2);
 
-                for (i = 0; i < o; i++) //calcula  a distancia da palavra com o enésima do codico
-                    dist += (code->word[i] + newWord[i]) % 2;
+        while (code != NULL) {
+            // Calculate hamming distance
+            int hamming_distance = 0;
+            for (int k = 0; k < code_order; k++)
+                hamming_distance += (code->value[k] + new_word[k]) % 2;
 
-                if (dist == 0) { // se a distancia for 0 significa q ela esta repetida
-                    aux = 1; // executa o laço novamente
-                    code = c->code;// volta ao inicio do codigo
-                    dist = 0;
-                    break;
-                }
-                dist = 0;
-
-                code = code->next;
+            if (hamming_distance == 0) {
+                code = c->code;// volta ao inicio do codigo
+                hamming_distance = 0;
+                break;
             }
+            hamming_distance = 0;
+
+            code = code->next;
         }
 
-        c->code = addListCode(c->code, newWord); // adiciona palavra ao codigo;
+        c->code = append_new_word(c->code, new_word); // adiciona palavra ao codigo;
         c->length++;
 
 
     }
 
-    calcDistMin(c); // calcula nova distancia minima
+    calculate_minimum_hamming_distance(c); // calcula nova distancia minima
 
     return *c;
 }
 
 
+void code_save(HammingCode *c) {
+    int i;
+    int code_prefix;
+    // todo: check possible array overflow
+    char file_name[20];
+    FILE *file;
+
+    code_prefix = rand() % 1000;
+    sprintf(file_name, "hamming_code_%d.txt", code_prefix);
+    file = fopen(("%s", file_name), "w");
+    fprintf(file, "SOF\n");
+    fprintf(file, "order:%d\nlength%d\nminimum_hamming_distance:%d", c->order, c->length, c->minimum_hamming_distance);
+
+
+    Word *code = c->code;
+    while (code != NULL) {
+        for (i = 0; i < c->order; i++) {
+            fprintf(file, "%u\n", code->value[i]);
+        }
+        code = code->next;
+    }
+
+    fprintf(file, "EOF");
+    fclose(file);
+}
 
 
 

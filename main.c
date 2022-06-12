@@ -5,7 +5,9 @@ int main(int argc, char *argv[]) {
 
     int order = atoi(argv[1]);
     int length = atoi(argv[2]);
-    Code code;
+    HammingCode code;
+
+    srand((unsigned) time(NULL));
 
     code = generate_code(order, length);
     code_save(&code);
