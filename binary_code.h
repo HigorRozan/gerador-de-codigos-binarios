@@ -58,6 +58,13 @@ void calculate_minimum_hamming_distance(HammingCode *code) {
     code->minimum_hamming_distance = distMin;
 }
 
+short int *generate_random_word(int code_order) {
+    short int *new_word = (short int *) calloc(code_order, sizeof(short int));
+    for (int j = 0; j < code_order; j++){
+        new_word[j] = (rand() % 2);
+    }
+    return  new_word;
+}
 
 HammingCode generate_code(int order, int length) {
 
@@ -73,13 +80,7 @@ HammingCode generate_code(int order, int length) {
 
 
     for (int i = 0; i < length; i++) {
-        short int *new_word = NULL;
-        new_word = (short int *) calloc(code_order, sizeof(short int));
-
-
-        // Generate new random value
-        for (int j = 0; j < code_order; j++)
-            new_word[j] = (rand() % 2);
+        short int *new_word = generate_random_word(order);
 
         while (code != NULL) {
             // Calculate hamming distance
@@ -97,13 +98,13 @@ HammingCode generate_code(int order, int length) {
             code = code->next;
         }
 
-        c->code = append_new_word(c->code, new_word); // adiciona palavra ao codigo;
+        c->code = append_new_word(c->code, new_word);
         c->length++;
 
 
     }
 
-    calculate_minimum_hamming_distance(c); // calcula nova distancia minima
+    calculate_minimum_hamming_distance(c);
 
     return *c;
 }
