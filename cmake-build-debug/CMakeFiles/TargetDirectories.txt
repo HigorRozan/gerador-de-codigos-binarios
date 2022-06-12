@@ -1,3 +1,0 @@
-/home/hrozan/github/utfpr-binary-code-generator/cmake-build-debug/CMakeFiles/BinaryCodeGenerator.dir
-/home/hrozan/github/utfpr-binary-code-generator/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/hrozan/github/utfpr-binary-code-generator/cmake-build-debug/CMakeFiles/rebuild_cache.dir
