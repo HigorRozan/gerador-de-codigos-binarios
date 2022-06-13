@@ -9,7 +9,7 @@ struct Word {
 };
 
 struct HammingCode {
-    struct Word *code;
+    struct Word *head_word;
     int order;
     double length;
     int minimum_hamming_distance;
@@ -37,14 +37,14 @@ void calculate_minimum_hamming_distance(HammingCode *code) {
     int dist = 0, distMin = code->order;
     int minimum_distance = code->minimum_hamming_distance;
 
-    Word *word_i = code->code;
-    Word *word_j = code->code->next;
+    Word *word_i = code->head_word;
+    Word *word_j = code->head_word->next;
 
     while (word_i != NULL) {
         while (word_j != NULL) {
             int current_distance = 0;
 
-            for (int i = 0; i < code->order; i++){
+            for (int i = 0; i < code->order; i++) {
                 current_distance += (word_i->value[i] + word_j->value[i]) % 2;
             }
 
@@ -60,79 +60,76 @@ void calculate_minimum_hamming_distance(HammingCode *code) {
 
 short int *generate_random_word(int code_order) {
     short int *new_word = (short int *) calloc(code_order, sizeof(short int));
-    for (int j = 0; j < code_order; j++){
+    for (int j = 0; j < code_order; j++) {
         new_word[j] = (rand() % 2);
     }
-    return  new_word;
+    return new_word;
+}
+
+HammingCode *new_hamming_code(int order, int length) {
+    HammingCode *c = (HammingCode *) malloc(sizeof(HammingCode));
+    c->head_word = NULL;
+    c->order = order;
+    c->length = length;
+    c->minimum_hamming_distance = -1;
+    return c;
 }
 
 HammingCode generate_code(int order, int length) {
 
-    HammingCode *c = (HammingCode *) malloc(sizeof(HammingCode));
-    c->code = NULL;
-    c->order = order;
-    c->length = 0;
-    c->minimum_hamming_distance = -1;
-
-
-    Word *code = c->code;
-    int code_order = c->order;
-
+    HammingCode *code = new_hamming_code(order, length);
 
     for (int i = 0; i < length; i++) {
         short int *new_word = generate_random_word(order);
 
-        while (code != NULL) {
+        Word *aux = code->head_word;
+        while (aux != NULL) {
             // Calculate hamming distance
             int hamming_distance = 0;
-            for (int k = 0; k < code_order; k++)
-                hamming_distance += (code->value[k] + new_word[k]) % 2;
+            for (int j = 0; j < code->order; j++){
+               int bit_a = aux->value[j];
+               int bit_b = new_word[j];
+
+                hamming_distance += (bit_a + bit_b) % 2;
+            }
 
             if (hamming_distance == 0) {
-                code = c->code;// volta ao inicio do codigo
+                aux = code->head_word;// volta ao inicio do codigo
                 hamming_distance = 0;
                 break;
             }
             hamming_distance = 0;
 
-            code = code->next;
+            aux = aux->next;
         }
 
-        c->code = append_new_word(c->code, new_word);
-        c->length++;
+        code->head_word = append_new_word(code->head_word, new_word);
+        code->length++;
 
 
     }
 
-    calculate_minimum_hamming_distance(c);
+    calculate_minimum_hamming_distance(code);
 
-    return *c;
+    return *code;
 }
 
 
 void code_save(HammingCode *c) {
     int i;
-    int code_prefix;
-    // todo: check possible array overflow
-    char file_name[20];
     FILE *file;
 
-    code_prefix = rand() % 1000;
-    sprintf(file_name, "hamming_code_%d.txt", code_prefix);
-    file = fopen(("%s", file_name), "w");
-    fprintf(file, "SOF\n");
-    fprintf(file, "order:%d\nlength%d\nminimum_hamming_distance:%d", c->order, c->length, c->minimum_hamming_distance);
+    file = fopen(("%s","hamming_code.txt"), "w");
+    fprintf(file, "(order = %d, length = %d, minimum_hamming_distance = %d)", c->order, c->length, c->minimum_hamming_distance);
 
-
-    Word *code = c->code;
+    Word *code = c->head_word;
     while (code != NULL) {
+        fprintf(file, "\n");
         for (i = 0; i < c->order; i++) {
-            fprintf(file, "%u\n", code->value[i]);
+            fprintf(file, "%u", code->value[i]);
         }
         code = code->next;
     }
-
-    fprintf(file, "EOF");
     fclose(file);
 }
 
