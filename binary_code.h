@@ -98,8 +98,8 @@ HammingCode generate_code(int order, int length) {
                 hamming_distance = 0;
                 break;
             }
-            hamming_distance = 0;
 
+            hamming_distance = 0;
             aux = aux->next;
         }
 
