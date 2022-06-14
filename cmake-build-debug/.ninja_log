@@ -1,0 +1,7 @@
+# ninja log v5
+0	86	6768711273834067	CMakeFiles/hamming_code_generator.dir/main.c.obj	d7a40bd4e6185df2
+92	205	6768711275007142	hamming_code_generator.exe	e415bffc2d0ae844
+2	95	6768740021216355	CMakeFiles/hamming_code_generator.dir/main.c.obj	d7a40bd4e6185df2
+95	206	6768740022286689	hamming_code_generator.exe	e415bffc2d0ae844
+2	87	6768740649750065	CMakeFiles/hamming_code_generator.dir/main.c.obj	d7a40bd4e6185df2
+88	187	6768740650730363	hamming_code_generator.exe	e415bffc2d0ae844
