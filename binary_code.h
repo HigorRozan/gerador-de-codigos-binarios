@@ -1,7 +1,11 @@
-# include <stdlib.h>
-# include <time.h>
-# include <string.h>
-# include <stdio.h>
+#pragma ide diagnostic ignored "cert-msc50-cpp"
+#pragma ide diagnostic ignored "cppcoreguidelines-narrowing-conversions"
+#pragma ide diagnostic ignored "misc-no-recursion"
+
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <stdio.h>
 
 struct Word {
     short int *value;
@@ -16,8 +20,62 @@ struct HammingCode {
 };
 
 typedef struct Word Word;
+
 typedef struct HammingCode HammingCode;
 
+HammingCode *generate_hamming_code(int order, int length);
+
+short int *generate_random_word(int order);
+
+Word *append_new_word(Word *word, short int *value);
+
+void calculate_minimum_hamming_distance(HammingCode *code);
+
+
+HammingCode *generate_hamming_code(int order, int length) {
+    HammingCode *code = (HammingCode *) malloc(sizeof(HammingCode));
+    code->head_word = NULL;
+    code->order = order;
+    code->length = length;
+    code->minimum_hamming_distance = -1;
+
+    for (int i = 0; i < code->length; i++) {
+        short int *new_word = generate_random_word(order);
+
+        // Iterate over all words of the code
+        Word *aux = code->head_word;
+        while (aux != NULL) {
+            // Calculate hamming distance
+            int hamming_distance = 0;
+            for (int j = 0; j < code->order; j++) {
+                int a = aux->value[j];
+                int b = new_word[j];
+
+                hamming_distance += (a + b) % 2;
+            }
+
+            // the word is already in the code
+            if (hamming_distance == 0) {
+                break;
+            }
+
+            aux = aux->next;
+        }
+
+        code->head_word = append_new_word(code->head_word, new_word);
+        code->length++;
+    }
+
+    return code;
+}
+
+short int *generate_random_word(int order) {
+    short int *new_word = (short int *) calloc(order, sizeof(short int));
+    for (int i = 0; i < order; i++) {
+        new_word[i] = rand() % 2;
+    }
+    return new_word;
+}
 
 Word *append_new_word(Word *word, short int *value) {
     if (word == NULL) {
@@ -32,108 +90,49 @@ Word *append_new_word(Word *word, short int *value) {
 }
 
 
-// todo: optimize comparator
 void calculate_minimum_hamming_distance(HammingCode *code) {
-    int dist = 0, distMin = code->order;
-    int minimum_distance = code->minimum_hamming_distance;
+    int minimum_distance = code->order;
 
-    Word *word_i = code->head_word;
-    Word *word_j = code->head_word->next;
+    Word *aux_i = code->head_word;
+    Word *aux_j = code->head_word->next;
 
-    while (word_i != NULL) {
-        while (word_j != NULL) {
+    while (aux_i != NULL) {
+        while (aux_j != NULL) {
             int current_distance = 0;
 
             for (int i = 0; i < code->order; i++) {
-                current_distance += (word_i->value[i] + word_j->value[i]) % 2;
+                current_distance += (aux_i->value[i] + aux_j->value[i]) % 2;
             }
 
-            dist = 0;
-            word_j = word_j->next;
+            if (current_distance < code->order) {
+                minimum_distance = current_distance;
+            }
+
+            aux_j = aux_j->next;
         }
-        word_j = word_i->next;
-        word_i = word_i->next;
+        aux_j = aux_i->next;
+        aux_i = aux_i->next;
     }
 
-    code->minimum_hamming_distance = distMin;
-}
-
-short int *generate_random_word(int code_order) {
-    short int *new_word = (short int *) calloc(code_order, sizeof(short int));
-    for (int j = 0; j < code_order; j++) {
-        new_word[j] = (rand() % 2);
-    }
-    return new_word;
-}
-
-HammingCode *new_hamming_code(int order, int length) {
-    HammingCode *c = (HammingCode *) malloc(sizeof(HammingCode));
-    c->head_word = NULL;
-    c->order = order;
-    c->length = length;
-    c->minimum_hamming_distance = -1;
-    return c;
-}
-
-HammingCode generate_code(int order, int length) {
-
-    HammingCode *code = new_hamming_code(order, length);
-
-    for (int i = 0; i < length; i++) {
-        short int *new_word = generate_random_word(order);
-
-        Word *aux = code->head_word;
-        while (aux != NULL) {
-            // Calculate hamming distance
-            int hamming_distance = 0;
-            for (int j = 0; j < code->order; j++){
-               int bit_a = aux->value[j];
-               int bit_b = new_word[j];
-
-                hamming_distance += (bit_a + bit_b) % 2;
-            }
-
-            if (hamming_distance == 0) {
-                aux = code->head_word;// volta ao inicio do codigo
-                hamming_distance = 0;
-                break;
-            }
-
-            hamming_distance = 0;
-            aux = aux->next;
-        }
-
-        code->head_word = append_new_word(code->head_word, new_word);
-        code->length++;
-
-
-    }
-
-    calculate_minimum_hamming_distance(code);
-
-    return *code;
+    code->minimum_hamming_distance = minimum_distance;
 }
 
 
-void code_save(HammingCode *c) {
-    int i;
-    FILE *file;
+void save_hamming_code_to_file(HammingCode *code) {
+    FILE *file = fopen("hamming_code.txt", "w");
 
-    file = fopen(("%s","hamming_code.txt"), "w");
-    fprintf(file, "(order = %d, length = %d, minimum_hamming_distance = %d)", c->order, c->length, c->minimum_hamming_distance);
+    fprintf(file, "(%d, %d, %d)", code->order, code->length, code->minimum_hamming_distance);
 
-    Word *code = c->head_word;
-    while (code != NULL) {
+    Word *aux = code->head_word;
+    while (aux != NULL) {
         fprintf(file, "\n");
-        for (i = 0; i < c->order; i++) {
-            fprintf(file, "%u", code->value[i]);
+
+        for (int i = 0; i < code->order; i++) {
+            fprintf(file, "%u", aux->value[i]);
         }
-        code = code->next;
+        aux = aux->next;
     }
+
     fclose(file);
 }
-
-
-
-
 
