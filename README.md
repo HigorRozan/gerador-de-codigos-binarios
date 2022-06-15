@@ -4,5 +4,5 @@ This algorithm use a random approach to generate binary hamming code
 
 ### Todo
 
-- [] Remove memory leaking
-- [] Create unit tests
+- [ ] Remove memory leaking
+- [ ] Create unit tests
