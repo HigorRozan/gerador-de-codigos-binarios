@@ -36,10 +36,10 @@ HammingCode *generate_hamming_code(int order, int length) {
     HammingCode *code = (HammingCode *) malloc(sizeof(HammingCode));
     code->head_word = NULL;
     code->order = order;
-    code->length = length;
+    code->length = 0;
     code->minimum_hamming_distance = -1;
 
-    for (int i = 0; i < code->length; i++) {
+    for (int i = 0; i < length; i++) {
         short int *new_word = generate_random_word(order);
 
         // Iterate over all words of the code
